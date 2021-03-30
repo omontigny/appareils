@@ -1,5 +1,8 @@
 import { Subject } from 'rxjs-compat/Subject';
+import { HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class AppareilService {
   statusOff: string = "Eteint";
   statusOn: string = "Allumé";
@@ -10,7 +13,8 @@ export class AppareilService {
 
 
   // avoid direct acces to this array
-  private appareils: any = [
+  private appareils: any = [];
+  /*  [
     {
       id: 1,
       name: 'Machine à laver',
@@ -26,8 +30,9 @@ export class AppareilService {
       name: 'Ordinateur',
       status: this.statusOff
     },
-  ];
+  ];*/
 
+  constructor(private httpClient: HttpClient) {}
   // tslint:disable-next-line:typedef
   switchOnAll() {
     for (let appareil of this.appareils) {
@@ -35,6 +40,7 @@ export class AppareilService {
     }
     this.emitAppareilSubject();
   }
+
 
   // tslint:disable-next-line:typedef
   switchOffAll() {
@@ -82,5 +88,32 @@ export class AppareilService {
 
     this.appareils.push(appareilObject);
     this.emitAppareilSubject();
+  }
+
+  saveAppareilsToServer() {
+    this.httpClient
+      .put('https://http-client-angular-demo-b2220-default-rtdb.firebaseio.com/appareils.json', this.appareils)
+      .subscribe(
+        () => {
+          console.log('Enregistrement Terminé');
+        },
+        (error) => {
+          console.log("Erreur d'enregistrement");
+        }
+      );
+  }
+
+  getAppareilsFromServer(){
+     this.httpClient
+       .get<any[]>('https://http-client-angular-demo-b2220-default-rtdb.firebaseio.com/appareils.json', this.appareils)
+       .subscribe(
+        (response) => {
+          this.appareils = response;
+          this.emitAppareilSubject();
+        },
+        (error) => {
+          console.log('Erreur de chargement ! ' + error);
+        }
+      );
   }
 }

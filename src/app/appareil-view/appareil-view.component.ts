@@ -35,11 +35,22 @@ export class AppareilViewComponent implements OnInit, OnDestroy {
         console.log('Observable complete!');
       }
     );
+    this.appareilService.getAppareilsFromServer();
     this.appareilService.emitAppareilSubject();
     // this.appareils = this.appareilService.appareils;
   }
-  onAllumer() {
+  onAllumer(): void {
     this.appareilService.switchOnAll();
+    // console.log('On allume tout !');
+  }
+
+  onSave(): void {
+    this.appareilService.saveAppareilsToServer();
+    // console.log('On allume tout !');
+  }
+
+  onFetch(): void {
+    this.appareilService.getAppareilsFromServer();
     // console.log('On allume tout !');
   }
 
